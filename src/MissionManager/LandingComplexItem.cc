@@ -51,15 +51,18 @@ void LandingComplexItem::_init(void)
 
     connect(this,                       &LandingComplexItem::finalApproachCoordinateChanged,this, &LandingComplexItem::_recalcFromCoordinateChange);
     connect(this,                       &LandingComplexItem::landingCoordinateChanged,      this, &LandingComplexItem::_recalcFromCoordinateChange);
+    connect(surveyLandingHeight(),      &Fact::valueChanged,                                this, &LandingComplexItem::_recalcFromCoordinateChange);
 
     connect(finalApproachAltitude(),    &Fact::valueChanged,                                this, &LandingComplexItem::_setDirty);
     connect(useDoChangeSpeed(),         &Fact::valueChanged,                                this, &LandingComplexItem::_setDirty);
     connect(finalApproachSpeed(),       &Fact::valueChanged,                                this, &LandingComplexItem::_setDirty);
+    connect(landingAreaLength(),        &Fact::valueChanged,                                this, &LandingComplexItem::_setDirty);
     connect(landingAltitude(),          &Fact::valueChanged,                                this, &LandingComplexItem::_setDirty);
     connect(landingDistance(),          &Fact::valueChanged,                                this, &LandingComplexItem::_setDirty);
     connect(landingHeading(),           &Fact::valueChanged,                                this, &LandingComplexItem::_setDirty);
     connect(loiterRadius(),             &Fact::valueChanged,                                this, &LandingComplexItem::_setDirty);
     connect(loiterClockwise(),          &Fact::valueChanged,                                this, &LandingComplexItem::_setDirty);
+    connect(surveyLandingHeight(),      &Fact::valueChanged,                                this, &LandingComplexItem::_setDirty);
     connect(useLoiterToAlt(),           &Fact::valueChanged,                                this, &LandingComplexItem::_setDirty);
     connect(stopTakingPhotos(),         &Fact::valueChanged,                                this, &LandingComplexItem::_setDirty);
     connect(stopTakingVideo(),          &Fact::valueChanged,                                this, &LandingComplexItem::_setDirty);
@@ -69,6 +72,7 @@ void LandingComplexItem::_init(void)
 
     connect(stopTakingPhotos(),         &Fact::valueChanged,                                this, &LandingComplexItem::_signalLastSequenceNumberChanged);
     connect(stopTakingVideo(),          &Fact::valueChanged,                                this, &LandingComplexItem::_signalLastSequenceNumberChanged);
+    connect(surveyLandingHeight(),      &Fact::valueChanged,                                this, &LandingComplexItem::_signalLastSequenceNumberChanged);
 
     connect(this,                       &LandingComplexItem::altitudesAreRelativeChanged,   this, &LandingComplexItem::_amslEntryAltChanged);
     connect(this,                       &LandingComplexItem::altitudesAreRelativeChanged,   this, &LandingComplexItem::_amslExitAltChanged);
@@ -83,10 +87,18 @@ void LandingComplexItem::_init(void)
     connect(this,                       &LandingComplexItem::finalApproachCoordinateChanged,this, &LandingComplexItem::complexDistanceChanged);
     connect(this,                       &LandingComplexItem::slopeStartCoordinateChanged,   this, &LandingComplexItem::complexDistanceChanged);
     connect(this,                       &LandingComplexItem::landingCoordinateChanged,      this, &LandingComplexItem::complexDistanceChanged);
+    connect(surveyLandingHeight(),      &Fact::valueChanged,                                this, &LandingComplexItem::complexDistanceChanged);
+
+    connect(landingAreaLength(),        &Fact::valueChanged,                                this, &LandingComplexItem::landingAreaLengthChanged);
+    connect(surveyLandingHeight(),      &Fact::valueChanged,                                this, &LandingComplexItem::greatestDistanceToChanged);
+    connect(landingHeading(),           &Fact::valueChanged,                                this, &LandingComplexItem::greatestDistanceToChanged);
+    connect(this,                       &LandingComplexItem::finalApproachCoordinateChanged,this, &LandingComplexItem::greatestDistanceToChanged);
+    connect(this,                       &LandingComplexItem::landingCoordinateChanged,      this, &LandingComplexItem::greatestDistanceToChanged);
 
     connect(this,                       &LandingComplexItem::slopeStartCoordinateChanged,   this, &LandingComplexItem::_updateFlightPathSegmentsSignal);
     connect(this,                       &LandingComplexItem::finalApproachCoordinateChanged,this, &LandingComplexItem::_updateFlightPathSegmentsSignal);
     connect(this,                       &LandingComplexItem::landingCoordinateChanged,      this, &LandingComplexItem::_updateFlightPathSegmentsSignal);
+    connect(surveyLandingHeight(),      &Fact::valueChanged,                                this, &LandingComplexItem::_updateFlightPathSegmentsSignal);
     connect(finalApproachAltitude(),    &Fact::valueChanged,                                this, &LandingComplexItem::_updateFlightPathSegmentsSignal);
     connect(landingAltitude(),          &Fact::valueChanged,                                this, &LandingComplexItem::_updateFlightPathSegmentsSignal);
     connect(this,                       &LandingComplexItem::altitudesAreRelativeChanged,   this, &LandingComplexItem::_updateFlightPathSegmentsSignal);
@@ -109,7 +121,23 @@ void LandingComplexItem::setLandingHeadingToTakeoffHeading()
 
 double LandingComplexItem::complexDistance(void) const
 {
-    return finalApproachCoordinate().distanceTo(slopeStartCoordinate()) + slopeStartCoordinate().distanceTo(landingCoordinate());
+    if (!surveyLandingHeight()->rawValue().toBool()) {
+        return finalApproachCoordinate().distanceTo(slopeStartCoordinate()) + slopeStartCoordinate().distanceTo(landingCoordinate());
+    }
+
+    QGeoCoordinate nearEndCoordinate = _landingCoordinate.atDistanceAndAzimuth(
+        landingAreaLength()->rawValue().toDouble() / 2,
+        landingHeading()->rawValue().toDouble() + 180);
+    QGeoCoordinate farEndCoordinate = _landingCoordinate.atDistanceAndAzimuth(
+        landingAreaLength()->rawValue().toDouble() / 2,
+        landingHeading()->rawValue().toDouble());
+
+    return finalApproachCoordinate().distanceTo(slopeStartCoordinate()) +
+           slopeStartCoordinate().distanceTo(nearEndCoordinate) +
+           nearEndCoordinate.distanceTo(farEndCoordinate) +
+           farEndCoordinate.distanceTo(finalApproachCoordinate()) +
+           finalApproachCoordinate().distanceTo(slopeStartCoordinate()) +
+           slopeStartCoordinate().distanceTo(landingCoordinate());
 }
 
 void LandingComplexItem::setLandingCoordinate(const QGeoCoordinate& coordinate)
@@ -311,8 +339,10 @@ int LandingComplexItem::lastSequenceNumber(void) const
     // Fixed items are:
     //  land start, loiter, land
     // Optional items are:
-    //  stop photos/video
-    return _sequenceNumber + 2 + (stopTakingPhotos()->rawValue().toBool() ? 2 : 0) + (stopTakingVideo()->rawValue().toBool() ? 1 : 0);
+    //  stop photos/video, survey landing height
+    return _sequenceNumber + 2 + (stopTakingPhotos()->rawValue().toBool() ? 2 : 0) +
+           (stopTakingVideo()->rawValue().toBool() ? 1 : 0) +
+           (surveyLandingHeight()->rawValue().toBool() ? 4 : 0);
 }
 
 void LandingComplexItem::appendMissionItems(QList<MissionItem*>& items, QObject* missionItemParent)
@@ -324,17 +354,83 @@ void LandingComplexItem::appendMissionItems(QList<MissionItem*>& items, QObject*
     MissionItem* item = _createDoLandStartItem(seqNum++, missionItemParent);
     items.append(item);
 
-    if (useDoChangeSpeed()->rawValue().toBool()) {
-        item = _createDoChangeSpeedItem(SPEED_TYPE_AIRSPEED, finalApproachSpeed()->rawValue().toDouble(), -1, seqNum++, missionItemParent);
-        items.append(item);
-    }
-
     if (stopTakingPhotos()->rawValue().toBool()) {
         CameraSection::appendStopTakingPhotos(items, seqNum, missionItemParent);
     }
 
     if (stopTakingVideo()->rawValue().toBool()) {
         CameraSection::appendStopTakingVideo(items, seqNum, missionItemParent);
+    }
+
+    // Quick and dirty implementation of MAV_CMD_DO_SET_REL_ALT_FROM_DIST_SENSOR
+    // in the LandingComplexItem
+    if (surveyLandingHeight()->rawValue().toBool()) {
+        QGeoCoordinate nearEndCoordinate = _landingCoordinate.atDistanceAndAzimuth(
+            landingAreaLength()->rawValue().toDouble() / 2,
+            landingHeading()->rawValue().toDouble() + 180);
+        QGeoCoordinate farEndCoordinate = _landingCoordinate.atDistanceAndAzimuth(
+            landingAreaLength()->rawValue().toDouble() / 2,
+            landingHeading()->rawValue().toDouble());
+
+        MissionItem *duplicateFinalApproachItem =
+            _createFinalApproachItem(seqNum++, missionItemParent);
+        items.append(duplicateFinalApproachItem);
+
+        // Configure the acceptance radius for the waypoint that triggers the
+        // MAV_CMD_DO_SET_REL_ALT_FROM_DIST_SENSOR such that it uses
+        // ±(measurementSpan / 2) meters around the landing point.
+        const float measurementSpan = 10.0f;
+        const float acceptanceRadius =
+            landingAreaLength()->rawValue().toDouble() / 2 -
+            measurementSpan / 2;
+
+        MissionItem *nearEndWaypointItem = new MissionItem(
+            seqNum++, MAV_CMD_NAV_WAYPOINT,
+            _altitudesAreRelative ? MAV_FRAME_GLOBAL_RELATIVE_ALT
+                                  : MAV_FRAME_GLOBAL,
+            0,                  // No hold time
+            0,                  // Default acceptance radius
+            0,                  // Pass through waypoint
+            qQNaN(),            // Yaw not specified
+            nearEndCoordinate.latitude(), nearEndCoordinate.longitude(),
+            finalApproachAltitude()->rawValue().toFloat(),
+            true,  // autoContinue
+            false, // isCurrentItem
+            missionItemParent);
+        items.append(nearEndWaypointItem);
+
+        MissionItem *farEndWaypointItem = new MissionItem(
+            seqNum++, MAV_CMD_NAV_WAYPOINT,
+            _altitudesAreRelative ? MAV_FRAME_GLOBAL_RELATIVE_ALT
+                                  : MAV_FRAME_GLOBAL,
+            0,                  // No hold time
+            acceptanceRadius,   // Acceptance radius
+            0,                  // Pass through waypoint
+            qQNaN(),            // Yaw not specified
+            farEndCoordinate.latitude(), farEndCoordinate.longitude(),
+            finalApproachAltitude()->rawValue().toFloat(),
+            true,  // autoContinue
+            false, // isCurrentItem
+            missionItemParent);
+        items.append(farEndWaypointItem);
+
+        MissionItem *setRelAltItem = new MissionItem(
+            seqNum++, MAV_CMD_DO_SET_REL_ALT_FROM_DIST_SENSOR,
+            MAV_FRAME_MISSION,
+            measurementSpan,    // Measurement span
+            0,                  // Measurement type = Travel distance (m)
+            12,                 // Max deviation = 12 degrees
+            25,                 // Max MAD = 25cm
+            qQNaN(), qQNaN(), qQNaN(),
+            true,               // autoContinue
+            false,              // isCurrentItem
+            missionItemParent);
+        items.append(setRelAltItem);
+    }
+
+    if (useDoChangeSpeed()->rawValue().toBool()) {
+        item = _createDoChangeSpeedItem(SPEED_TYPE_AIRSPEED, finalApproachSpeed()->rawValue().toDouble(), -1, seqNum++, missionItemParent);
+        items.append(item);
     }
 
     item = _createFinalApproachItem(seqNum++, missionItemParent);
@@ -457,9 +553,14 @@ bool LandingComplexItem::_scanForItem(QmlObjectListModel* visualItems, int& star
 {
     // A valid landing pattern is comprised of the follow commands in this order at the end of the item list:
     //  MAV_CMD_DO_LAND_START - required
-    //  MAV_CMD_DO_CHANGE_SPEED - optional
     //  Stop taking photos sequence - optional
     //  Stop taking video sequence - optional
+    //  Survey landing height sequence - optional (quick and dirty implementation)
+    //    - Duplicate MAV_CMD_NAV_LOITER_TO_ALT or MAV_CMD_NAV_WAYPOINT
+    //    - MAV_CMD_NAV_WAYPOINT at near end coordinate
+    //    - MAV_CMD_NAV_WAYPOINT at far end coordinate
+    //    - MAV_CMD_DO_SET_REL_ALT_FROM_DIST_SENSOR
+    //  MAV_CMD_DO_CHANGE_SPEED - optional
     //  MAV_CMD_NAV_LOITER_TO_ALT or MAV_CMD_NAV_WAYPOINT
     //  MAV_CMD_NAV_LAND or MAV_CMD_NAV_VTOL_LAND
 
@@ -509,18 +610,6 @@ bool LandingComplexItem::_scanForItem(QmlObjectListModel* visualItems, int& star
         return false;
     }
 
-    scanIndex -= CameraSection::stopTakingVideoCommandCount();
-    bool stopTakingVideo = CameraSection::scanStopTakingVideo(visualItems, scanIndex, false /* removeScannedItems */);
-    if (!stopTakingVideo) {
-        scanIndex += CameraSection::stopTakingVideoCommandCount();
-    }
-
-    scanIndex -= CameraSection::stopTakingPhotosCommandCount();
-    bool stopTakingPhotos = CameraSection::scanStopTakingPhotos(visualItems, scanIndex, false /* removeScannedItems */);
-    if (!stopTakingPhotos) {
-        scanIndex += CameraSection::stopTakingPhotosCommandCount();
-    }
-
     scanIndex--;
     bool useDoChangeSpeed = false;
     double finalApproachSpeed = 0;
@@ -542,6 +631,42 @@ bool LandingComplexItem::_scanForItem(QmlObjectListModel* visualItems, int& star
         scanIndex++;
     }
 
+    bool useSurveyLandingHeight = false;
+    if (scanIndex >= 4) {
+        SimpleMissionItem* setRelAltItem = visualItems->value<SimpleMissionItem*>(scanIndex - 1);
+        SimpleMissionItem* farEndWaypointItem = visualItems->value<SimpleMissionItem*>(scanIndex - 2);
+        SimpleMissionItem* nearEndWaypointItem = visualItems->value<SimpleMissionItem*>(scanIndex - 3);
+        SimpleMissionItem* approachItem = visualItems->value<SimpleMissionItem*>(scanIndex - 4);
+
+        bool hasValidSequence =
+            setRelAltItem &&
+            setRelAltItem->command() == MAV_CMD_DO_SET_REL_ALT_FROM_DIST_SENSOR &&
+            farEndWaypointItem &&
+            farEndWaypointItem->command() == MAV_CMD_NAV_WAYPOINT &&
+            nearEndWaypointItem &&
+            nearEndWaypointItem->command() == MAV_CMD_NAV_WAYPOINT &&
+            approachItem &&
+            (approachItem->command() == MAV_CMD_NAV_LOITER_TO_ALT ||
+             approachItem->command() == MAV_CMD_NAV_WAYPOINT);
+
+        if (hasValidSequence) {
+            useSurveyLandingHeight = true;
+            scanIndex -= 4;
+        }
+    }
+
+    scanIndex -= CameraSection::stopTakingVideoCommandCount();
+    bool stopTakingVideo = CameraSection::scanStopTakingVideo(visualItems, scanIndex, false /* removeScannedItems */);
+    if (!stopTakingVideo) {
+        scanIndex += CameraSection::stopTakingVideoCommandCount();
+    }
+
+    scanIndex -= CameraSection::stopTakingPhotosCommandCount();
+    bool stopTakingPhotos = CameraSection::scanStopTakingPhotos(visualItems, scanIndex, false /* removeScannedItems */);
+    if (!stopTakingPhotos) {
+        scanIndex += CameraSection::stopTakingPhotosCommandCount();
+    }
+
     scanIndex--;
     if (scanIndex < 0 || scanIndex > visualItems->count() - 1) {
         return false;
@@ -559,14 +684,17 @@ bool LandingComplexItem::_scanForItem(QmlObjectListModel* visualItems, int& star
 
     // We made it this far so we do have a Fixed Wing Landing Pattern item at the end of the mission.
     int deleteCount = 3;
+    if (useDoChangeSpeed) {
+        deleteCount++;
+    }
+    if (useSurveyLandingHeight) {
+        deleteCount += 4;
+    }
     if (stopTakingPhotos) {
         deleteCount += CameraSection::stopTakingPhotosCommandCount();
     }
     if (stopTakingVideo) {
         deleteCount += CameraSection::stopTakingVideoCommandCount();
-    }
-    if (useDoChangeSpeed) {
-        deleteCount++;
     }
     int firstItem = startIndex - deleteCount;
     while (deleteCount--) {
@@ -583,6 +711,7 @@ bool LandingComplexItem::_scanForItem(QmlObjectListModel* visualItems, int& star
     complexItem->setFinalApproachCoordinate(QGeoCoordinate(missionItemFinalApproach.param5(), missionItemFinalApproach.param6()));
     complexItem->finalApproachAltitude()->setRawValue(missionItemFinalApproach.param7());
     complexItem->useDoChangeSpeed()->setRawValue(useDoChangeSpeed);
+    complexItem->surveyLandingHeight()->setRawValue(useSurveyLandingHeight);
     complexItem->useLoiterToAlt()->setRawValue(useLoiterToAlt);
 
     if (useDoChangeSpeed) {
@@ -693,7 +822,19 @@ void LandingComplexItem::_updateLandingCoodinateAltitudeFromFact(void)
 
 double LandingComplexItem::greatestDistanceTo(const QGeoCoordinate &other) const
 {
-    return qMax(_finalApproachCoordinate.distanceTo(other),_landingCoordinate.distanceTo(other));
+    double greatestDistance = qMax(_finalApproachCoordinate.distanceTo(other),_landingCoordinate.distanceTo(other));
+    if (surveyLandingHeight()->rawValue().toBool()) {
+        QGeoCoordinate nearEndCoordinate = _landingCoordinate.atDistanceAndAzimuth(
+            landingAreaLength()->rawValue().toDouble() / 2,
+            landingHeading()->rawValue().toDouble() + 180);
+        QGeoCoordinate farEndCoordinate = _landingCoordinate.atDistanceAndAzimuth(
+            landingAreaLength()->rawValue().toDouble() / 2,
+            landingHeading()->rawValue().toDouble());
+
+        greatestDistance = qMax(greatestDistance, nearEndCoordinate.distanceTo(other));
+        greatestDistance = qMax(greatestDistance, farEndCoordinate.distanceTo(other));
+    }
+    return greatestDistance;
 }
 
 QJsonObject LandingComplexItem::_save(void)
@@ -710,6 +851,8 @@ QJsonObject LandingComplexItem::_save(void)
 
     saveObject[_jsonUseDoChangeSpeedKey]        = useDoChangeSpeed()->rawValue().toBool();
     saveObject[_jsonFinalApproachSpeedKey]      = finalApproachSpeed()->rawValue().toDouble();
+    saveObject[_jsonLandingAreaLengthKey]       = landingAreaLength()->rawValue().toDouble();
+    saveObject[_jsonSurveyLandingHeightKey]     = surveyLandingHeight()->rawValue().toBool();
 
     coordinate = _landingCoordinate;
     coordinate.setAltitude(landingAltitude()->rawValue().toDouble());
@@ -738,9 +881,11 @@ bool LandingComplexItem::_load(const QJsonObject& complexObject, int sequenceNum
         { _jsonFinalApproachSpeedKey,                   QJsonValue::Double, false },
         { _jsonLoiterRadiusKey,                         QJsonValue::Double, true },
         { _jsonLoiterClockwiseKey,                      QJsonValue::Bool,   true },
+        { _jsonLandingAreaLengthKey,                    QJsonValue::Double, false },
         { _jsonLandingCoordinateKey,                    QJsonValue::Array,  true },
         { _jsonStopTakingPhotosKey,                     QJsonValue::Bool,   false },
         { _jsonStopTakingVideoKey,                      QJsonValue::Bool,   false },
+        { _jsonSurveyLandingHeightKey,                  QJsonValue::Bool,   false },
         { _jsonUseLoiterToAltKey,                       QJsonValue::Bool,   false },
     };
     if (!JsonParsing::validateKeys(complexObject, keyInfoList, errorString)) {
@@ -809,6 +954,14 @@ bool LandingComplexItem::_load(const QJsonObject& complexObject, int sequenceNum
     finalApproachSpeed()->setRawValue(complexObject.contains(_jsonFinalApproachSpeedKey)
                                       ? complexObject[_jsonFinalApproachSpeedKey].toDouble()
                                       : finalApproachSpeed()->rawDefaultValue());
+
+    landingAreaLength()->setRawValue(complexObject.contains(_jsonLandingAreaLengthKey)
+                                         ? complexObject[_jsonLandingAreaLengthKey].toDouble()
+                                         : landingAreaLength()->rawDefaultValue());
+
+    surveyLandingHeight()->setRawValue(complexObject.contains(_jsonSurveyLandingHeightKey)
+                                           ? complexObject[_jsonSurveyLandingHeightKey].toBool()
+                                           : surveyLandingHeight()->rawDefaultValue());
 
     if (!GeoJsonHelper::loadGeoCoordinate(complexObject[_jsonLandingCoordinateKey], true /* altitudeRequired */, coordinate, errorString)) {
         return false;

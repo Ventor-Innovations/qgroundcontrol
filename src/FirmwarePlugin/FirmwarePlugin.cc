@@ -170,6 +170,17 @@ void FirmwarePlugin::guidedModeChangeEquivalentAirspeedMetersSecond(Vehicle*, do
     QGC::showAppMessage(guided_mode_not_supported_by_vehicle);
 }
 
+void FirmwarePlugin::guidedModeSetRelativeAltitudeFromDistanceSensor(
+    Vehicle* vehicle,
+    double measurementSpan,
+    int measurementType,
+    double maxSensorDeviationDeg,
+    double maxMeanAbsDeviationCm) const
+{
+    // Not supported by generic vehicle
+    QGC::showAppMessage(guided_mode_not_supported_by_vehicle);
+}
+
 void FirmwarePlugin::guidedModeChangeHeading(Vehicle *vehicle, const QGeoCoordinate &/*headingCoord*/) const
 {
     Q_UNUSED(vehicle);

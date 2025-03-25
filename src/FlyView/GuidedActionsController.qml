@@ -49,6 +49,7 @@ Item {
     readonly property string setEstimatorOriginTitle:       qsTr("Set Estimator Origin")
     readonly property string setFlightMode:                 qsTr("Set Flight Mode")
     readonly property string changeHeadingTitle:            qsTr("Change Heading")
+    readonly property string setRelAltFromDistSensorTitle:  qsTr("Set Relative Alt to HAGL")
 
     readonly property string armMessage:                        qsTr("Arm the vehicle.")
     readonly property string mvArmMessage:                      qsTr("Arm selected vehicles.")
@@ -78,6 +79,7 @@ Item {
     readonly property string setEstimatorOriginMessage:         qsTr("Make the specified location the estimator origin")
     readonly property string setFlightModeMessage:              qsTr("Set the vehicle flight mode to %1").arg(_actionData)
     readonly property string changeHeadingMessage:              qsTr("Set the vehicle heading towards the specified location")
+    readonly property string setRelAltFromDistSensorMessage:    qsTr("Set the relative altitude of the vehicle to the current HAGL using data from an onboard downward-facing rangefinder.")
 
     readonly property int actionRTL:                        1
     readonly property int actionLand:                       2
@@ -108,6 +110,7 @@ Item {
     readonly property int actionMVArm:                      28
     readonly property int actionMVDisarm:                   29
     readonly property int actionChangeLoiterRadius:         30
+    readonly property int actionSetRelAltFromDistSensor:    31
 
     readonly property int customActionStart:                10000 // Custom actions ids should start here so that they don't collide with the built in actions
 
@@ -142,6 +145,7 @@ Item {
     property bool showSetHome:              _guidedActionsEnabled
     property bool showSetEstimatorOrigin:   _activeVehicle && !(_activeVehicle.sensorsPresentBits & MAVLinkEnums.MAV_SYS_STATUS_SENSOR_GPS)
     property bool showChangeHeading:        _guidedActionsEnabled && _vehicleFlying
+    property bool showSetRelAltFromDistSensor: _guidedActionsEnabled && _vehicleFlying && _activeVehicle.apmFirmware && (_activeVehicle.fixedWing || _activeVehicle.vtol) // should also check if the vehicle has a rangefinder
 
     property string changeSpeedTitle:   _vehicleInFwdFlight ? changeAirspeedTitle : changeCruiseSpeedTitle
     property string changeSpeedMessage: _vehicleInFwdFlight ? changeAirspeedMessage : changeCruiseSpeedMessage
@@ -537,6 +541,10 @@ Item {
             confirmDialog.title = changeHeadingTitle
             confirmDialog.message = changeHeadingMessage
             break
+        case actionSetRelAltFromDistSensor:
+            confirmDialog.title = setRelAltFromDistSensorTitle
+            confirmDialog.message = setRelAltFromDistSensorMessage
+            break
         default:
             if (!customController.customConfirmAction(actionCode, actionData, mapIndicator, confirmDialog)) {
                 console.warn("Unknown actionCode", actionCode)
@@ -677,6 +685,9 @@ Item {
             break
         case actionChangeHeading:
             _activeVehicle.guidedModeChangeHeading(actionData)
+            break
+        case actionSetRelAltFromDistSensor:
+            _activeVehicle.guidedModeSetRelativeAltitudeFromDistanceSensor()
             break
         default:
             if (!customController.customExecuteAction(actionCode, actionData, sliderOutputValue, optionChecked)) {

@@ -557,14 +557,23 @@ QList<MAV_CMD> APMFirmwarePlugin::supportedMissionCommands(QGCMAVLink::VehicleCl
         MAV_CMD_NAV_LAND, MAV_CMD_NAV_TAKEOFF,
     };
 
+    QList<MAV_CMD> planeCommands = {
+        MAV_CMD_DO_SET_REL_ALT_FROM_DIST_SENSOR,
+    };
+
     if (vehicleClass == QGCMAVLink::VehicleClassGeneric) {
         supportedCommands   += vtolCommands;
         supportedCommands   += flightCommands;
+        supportedCommands   += planeCommands;
     }
     if (vehicleClass == QGCMAVLink::VehicleClassVTOL) {
         supportedCommands += vtolCommands;
         supportedCommands += flightCommands;
-    } else if (vehicleClass == QGCMAVLink::VehicleClassFixedWing || vehicleClass == QGCMAVLink::VehicleClassMultiRotor) {
+        supportedCommands += planeCommands;
+    } else if (vehicleClass == QGCMAVLink::VehicleClassFixedWing) {
+        supportedCommands += flightCommands;
+        supportedCommands += planeCommands;
+    } else if (vehicleClass == QGCMAVLink::VehicleClassMultiRotor) {
         supportedCommands += flightCommands;
     }
 
@@ -969,6 +978,29 @@ void APMFirmwarePlugin::guidedModeChangeHeading(Vehicle *vehicle, const QGeoCoor
         direction,
         true
     );
+}
+
+void APMFirmwarePlugin::guidedModeSetRelativeAltitudeFromDistanceSensor(
+    Vehicle* vehicle,
+    double measurementSpan,
+    int measurementType,
+    double maxSensorDeviationDeg,
+    double maxMeanAbsDeviationCm) const
+{
+    if (!vehicle || (!vehicle->fixedWing() && !vehicle->vtol())) {
+        QGC::showAppMessage(guided_mode_not_supported_by_vehicle);
+        return;
+    }
+
+    vehicle->sendMavCommand(
+        vehicle->defaultComponentId(),
+        MAV_CMD_DO_SET_REL_ALT_FROM_DIST_SENSOR,
+        true,                                // show error if fail
+        static_cast<float>(measurementSpan),
+        measurementType,
+        static_cast<float>(maxSensorDeviationDeg),
+        static_cast<float>(maxMeanAbsDeviationCm)
+        );                                    // param 5-7 unused
 }
 
 double APMFirmwarePlugin::minimumTakeoffAltitudeMeters(Vehicle* vehicle) const

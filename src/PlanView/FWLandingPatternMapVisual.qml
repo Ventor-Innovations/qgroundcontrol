@@ -19,7 +19,7 @@ Item {
     signal clicked(int sequenceNumber)
 
     readonly property real _landingWidthMeters:     15
-    readonly property real _landingLengthMeters:    100
+    readonly property real _landingLengthMeters:    _missionItem.landingAreaLength.rawValue
 
     property var    _missionItem:                   object
     property var    _mouseArea
@@ -391,6 +391,7 @@ Item {
                 onLandingCoordinateChanged:         recalc()
                 onSlopeStartCoordinateChanged:      recalc()
                 onFinalApproachCoordinateChanged:   recalc()
+                onLandingAreaLengthChanged:         recalc()
             }
         }
     }
@@ -424,6 +425,7 @@ Item {
                 onLandingCoordinateChanged:         recalc()
                 onSlopeStartCoordinateChanged:      recalc()
                 onFinalApproachCoordinateChanged:   recalc()
+                onLandingAreaLengthChanged:         recalc()
             }
         }
     }
@@ -456,6 +458,7 @@ Item {
                 onLandingCoordinateChanged:         recalc()
                 onSlopeStartCoordinateChanged:      recalc()
                 onFinalApproachCoordinateChanged:   recalc()
+                onLandingAreaLengthChanged:         recalc()
             }
 
             Connections {
@@ -493,6 +496,7 @@ Item {
                 onLandingCoordinateChanged:         recalc()
                 onSlopeStartCoordinateChanged:      recalc()
                 onFinalApproachCoordinateChanged:   recalc()
+                onLandingAreaLengthChanged:         recalc()
             }
         }
     }
@@ -527,6 +531,7 @@ Item {
                 onLandingCoordinateChanged:         recalc()
                 onSlopeStartCoordinateChanged:      recalc()
                 onFinalApproachCoordinateChanged:   recalc()
+                onLandingAreaLengthChanged:         recalc()
             }
 
             Connections {

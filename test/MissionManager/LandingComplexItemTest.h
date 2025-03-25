@@ -106,6 +106,11 @@ private:
         return &_loiterClockwiseFact;
     }
 
+    const Fact* _landingAreaLength() const final
+    {
+        return &_landingAreaLengthFact;
+    }
+
     const Fact* _landingAltitude() const final
     {
         return &_landingAltitudeFact;
@@ -119,6 +124,11 @@ private:
     const Fact* _landingHeading() const final
     {
         return &_landingHeadingFact;
+    }
+
+    const Fact* _surveyLandingHeight() const final
+    {
+        return &_surveyLandingHeightFact;
     }
 
     const Fact* _useLoiterToAlt() const final
@@ -147,8 +157,10 @@ private:
     Fact _finalApproachSpeedFact;
     Fact _loiterRadiusFact;
     Fact _loiterClockwiseFact;
+    Fact _landingAreaLengthFact;
     Fact _landingHeadingFact;
     Fact _landingAltitudeFact;
+    Fact _surveyLandingHeightFact;
     Fact _useLoiterToAltFact;
     Fact _stopTakingPhotosFact;
     Fact _stopTakingVideoFact;

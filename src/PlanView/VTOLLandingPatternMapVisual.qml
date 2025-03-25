@@ -16,7 +16,7 @@ Item {
     signal clicked(int sequenceNumber)
 
     readonly property real _landingWidthMeters:     15
-    readonly property real _landingLengthMeters:    100
+    readonly property real _landingLengthMeters:    _missionItem.landingAreaLength.rawValue
 
     property var    _missionItem:               object
     property var    _mouseArea

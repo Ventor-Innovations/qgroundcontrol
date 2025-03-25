@@ -19,9 +19,11 @@ FixedWingLandingComplexItem::FixedWingLandingComplexItem(PlanMasterController* m
     , _finalApproachSpeedFact   (settingsGroup, _metaDataMap[finalApproachSpeedName])
     , _loiterRadiusFact         (settingsGroup, _metaDataMap[loiterRadiusName])
     , _loiterClockwiseFact      (settingsGroup, _metaDataMap[loiterClockwiseName])
+    , _landingAreaLengthFact    (settingsGroup, _metaDataMap[landingAreaLengthName])
     , _landingHeadingFact       (settingsGroup, _metaDataMap[landingHeadingName])
     , _landingAltitudeFact      (settingsGroup, _metaDataMap[landingAltitudeName])
     , _glideSlopeFact           (settingsGroup, _metaDataMap[glideSlopeName])
+    , _surveyLandingHeightFact  (settingsGroup, _metaDataMap[surveyLandingHeightName])
     , _useLoiterToAltFact       (settingsGroup, _metaDataMap[useLoiterToAltName])
     , _stopTakingPhotosFact     (settingsGroup, _metaDataMap[stopTakingPhotosName])
     , _stopTakingVideoFact      (settingsGroup, _metaDataMap[stopTakingVideoName])
@@ -151,8 +153,25 @@ void FixedWingLandingComplexItem::_updateFlightPathSegmentsDontCallDirectly(void
 
     _flightPathSegments.beginResetModel();
     _flightPathSegments.clearAndDeleteContents();
-    if (useLoiterToAlt()->rawValue().toBool()) {
-        _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, finalApproachCoordinate(), amslEntryAlt(), slopeStartCoordinate(),  amslEntryAlt()); // Best we can do to simulate loiter circle terrain profile
+    if (surveyLandingHeight()->rawValue().toBool()) {
+        QGeoCoordinate nearEndCoordinate = landingCoordinate().atDistanceAndAzimuth(
+            landingAreaLength()->rawValue().toDouble() / 2,
+            landingHeading()->rawValue().toDouble() + 180);
+        QGeoCoordinate farEndCoordinate = landingCoordinate().atDistanceAndAzimuth(
+            landingAreaLength()->rawValue().toDouble() / 2,
+            landingHeading()->rawValue().toDouble());
+        if (useLoiterToAlt()->rawValue().toBool()) {
+            _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, finalApproachCoordinate(), amslEntryAlt(), slopeStartCoordinate(),  amslEntryAlt()); // Best we can do to simulate loiter circle terrain profile
+        }
+        _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, slopeStartCoordinate(), amslEntryAlt(), nearEndCoordinate,      amslEntryAlt());
+        _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, nearEndCoordinate,      amslEntryAlt(), farEndCoordinate,       amslEntryAlt());
+        _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, farEndCoordinate,       amslEntryAlt(), finalApproachCoordinate(), amslEntryAlt());
+        if (useLoiterToAlt()->rawValue().toBool()) {
+            _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, finalApproachCoordinate(), amslEntryAlt(), slopeStartCoordinate(),  amslEntryAlt()); // Best we can do to simulate loiter circle terrain profile
+        }
+        _appendFlightPathSegment(FlightPathSegment::SegmentTypeLand, slopeStartCoordinate(), amslEntryAlt(), landingCoordinate(),        amslExitAlt());
+    } else if (useLoiterToAlt()->rawValue().toBool()) {
+        _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, finalApproachCoordinate(), amslEntryAlt(), slopeStartCoordinate(), amslEntryAlt()); // Best we can do to simulate loiter circle terrain profile
         _appendFlightPathSegment(FlightPathSegment::SegmentTypeLand, slopeStartCoordinate(), amslEntryAlt(), landingCoordinate(),        amslExitAlt());
     } else {
         _appendFlightPathSegment(FlightPathSegment::SegmentTypeLand, finalApproachCoordinate(), amslEntryAlt(), landingCoordinate(),        amslExitAlt());

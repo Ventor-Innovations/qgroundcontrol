@@ -27,7 +27,6 @@ Rectangle {
     property string _setToVehicleLocationStr:   qsTr("Set to vehicle location")
     property int    _altitudeFrame:              missionItem.altitudesAreRelative ? QGroundControl.AltitudeFrameRelative : QGroundControl.AltitudeFrameAbsolute
 
-
     Column {
         id:                 editorColumn
         anchors.margins:    _margin
@@ -50,6 +49,10 @@ Rectangle {
             visible:            finalApproachSection.checked
 
             Item { width: 1; height: _spacer }
+            FactCheckBox {
+                text:       qsTr("Survey landing height")
+                fact:       missionItem.surveyLandingHeight
+            }
 
             FactCheckBox {
                 text:       qsTr("Use loiter to altitude")

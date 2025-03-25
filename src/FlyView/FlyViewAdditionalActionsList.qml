@@ -48,6 +48,12 @@ QtObject {
             text:       guidedController.changeSpeedMessage,
             action:     guidedController.actionChangeSpeed,
             visible:    guidedController.showChangeSpeed
+        },
+        {
+            title:      guidedController.setRelAltFromDistSensorTitle,
+            text:       guidedController.setRelAltFromDistSensorMessage,
+            action:     guidedController.actionSetRelAltFromDistSensor,
+            visible:    guidedController.showSetRelAltFromDistSensor
         }
     ]
 }
