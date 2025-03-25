@@ -13,7 +13,9 @@ QtObject {
     property var guidedController
 
     property bool anyActionAvailable: guidedController.showStartMission || guidedController.showContinueMission || guidedController.showChangeAlt || 
-                                      guidedController.showChangeLoiterRadius ||  guidedController.showLandAbort || guidedController.showChangeSpeed
+                                      guidedController.showChangeLoiterRadius ||  guidedController.showLandAbort || guidedController.showChangeSpeed ||
+                                      guidedController.showSetRelAltFromDistSensor
+
     property var model: [
         {
             title:      guidedController.startMissionTitle,
@@ -50,6 +52,12 @@ QtObject {
             text:       guidedController.changeSpeedMessage,
             action:     guidedController.actionChangeSpeed,
             visible:    guidedController.showChangeSpeed
+        },
+        {
+            title:      guidedController.setRelAltFromDistSensorTitle,
+            text:       guidedController.setRelAltFromDistSensorMessage,
+            action:     guidedController.actionSetRelAltFromDistSensor,
+            visible:    guidedController.showSetRelAltFromDistSensor
         }
     ]
 }

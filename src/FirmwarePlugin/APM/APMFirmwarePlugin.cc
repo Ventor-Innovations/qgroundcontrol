@@ -570,6 +570,7 @@ QList<MAV_CMD> APMFirmwarePlugin::supportedMissionCommands(QGCMAVLink::VehicleCl
         MAV_CMD_DO_GRIPPER,
         MAV_CMD_DO_GUIDED_LIMITS,
         MAV_CMD_DO_AUTOTUNE_ENABLE,
+        MAV_CMD_DO_SET_REL_ALT_FROM_DIST_SENSOR,
     };
 
     QList<MAV_CMD> vtolCommands = {
@@ -986,6 +987,24 @@ void APMFirmwarePlugin::guidedModeChangeHeading(Vehicle *vehicle, const QGeoCoor
         direction,
         true
     );
+}
+
+void APMFirmwarePlugin::guidedModeSetRelativeAltitudeFromDistanceSensor(
+    Vehicle* vehicle,
+    double measurementSpan,
+    int measurementType,
+    double maxSensorDeviationDeg,
+    double maxMeanAbsDeviationCm) const
+{
+    vehicle->sendMavCommand(
+        vehicle->defaultComponentId(),
+        MAV_CMD_DO_SET_REL_ALT_FROM_DIST_SENSOR,
+        true,                                // show error if fail
+        static_cast<float>(measurementSpan),
+        measurementType,
+        static_cast<float>(maxSensorDeviationDeg),
+        static_cast<float>(maxMeanAbsDeviationCm)
+        );                                    // param 5-7 unused
 }
 
 double APMFirmwarePlugin::minimumTakeoffAltitudeMeters(Vehicle* vehicle) const

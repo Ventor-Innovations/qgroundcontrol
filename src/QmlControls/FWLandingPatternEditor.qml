@@ -67,6 +67,11 @@ Rectangle {
             Item { width: 1; height: _spacer }
 
             FactCheckBox {
+                text:       qsTr("Survey landing height")
+                fact:       missionItem.surveyLandingHeight
+            }
+
+            FactCheckBox {
                 text:       qsTr("Use loiter to altitude")
                 fact:       missionItem.useLoiterToAlt
             }

@@ -77,6 +77,7 @@ public:
     double minimumEquivalentAirspeed(Vehicle *vehicle) const override;
     bool fixedWingAirSpeedLimitsAvailable(Vehicle *vehicle) const override;
     void guidedModeChangeEquivalentAirspeedMetersSecond(Vehicle* vehicle, double airspeed_equiv) const override;
+    void guidedModeSetRelativeAltitudeFromDistanceSensor(Vehicle* vehicle, double measurementSpan, int measurementType, double maxSensorDeviationDeg, double maxMeanAbsDeviationCm) const override;
     void sendGCSMotionReport(Vehicle *vehicle, const FollowMe::GCSMotionReport& motionReport, uint8_t estimatationCapabilities) const override;
     QVariant expandedToolbarIndicatorSource  (const Vehicle* vehicle, const QString& indicatorName) const override;
 

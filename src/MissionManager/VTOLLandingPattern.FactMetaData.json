@@ -4,6 +4,16 @@
     "QGC.MetaData.Facts":
 [
 {
+    "name":             "LandingAreaLength",
+    "shortDesc":        "Length of the landing area.",
+    "type":             "double",
+    "units":            "m",
+    "min":              15.0,
+    "max":              200.0,
+    "decimalPlaces":    0,
+    "default":          100.0
+},
+{
     "name":             "LandingDistance",
     "shortDesc":        "Distance between approach and land points.",
     "type":             "double",
@@ -67,6 +77,12 @@
     "units":            "m",
     "decimalPlaces":    1,
     "default":          0.0
+},
+{
+    "name":             "SurveyLandingHeight",
+    "shortDesc":        "Survey landing point height with distance sensor",
+    "type":             "bool",
+    "default":          false
 },
 {
     "name":         "UseLoiterToAlt",

@@ -232,6 +232,21 @@ public:
     ///     @param airspeed_equiv Equivalent airspeed in m/s
     virtual void guidedModeChangeEquivalentAirspeedMetersSecond(Vehicle *vehicle, double airspeed_equiv) const;
 
+    /// Command vehicle to set its relative altitude to the current height above
+    /// ground level (AGL), based on recent measurements from an onboard
+    /// downward-facing rangefinder.
+    ///     @param measurementSpan Distance measurement span
+    ///     @param measurementType Distance measurement type
+    ///         (0=m, 1=s, 2=samples)
+    ///     @param maxSensorDeviationDeg Maximum acceptable angle of the
+    ///         distance sensor from vertical, in degrees
+    ///     @param maxMeanAbsDeviationCm Maximum acceptable mean absolute
+    ///         deviation (MAD) of the sensor readings over the measurement
+    ///         span, in centimeters
+    virtual void guidedModeSetRelativeAltitudeFromDistanceSensor(
+        Vehicle *vehicle, double measurementSpan, int measurementType,
+        double maxSensorDeviationDeg, double maxMeanAbsDeviationCm) const;
+
     /// Default tx mode to apply to joystick axes
     /// TX modes are as outlined here: http://www.rc-airplane-world.com/rc-transmitter-modes.html
     virtual int defaultJoystickTXMode() const { return 2; }

@@ -333,6 +333,21 @@ public:
     ///     @param airspeed Target equivalent airspeed
     Q_INVOKABLE void guidedModeChangeEquivalentAirspeedMetersSecond(double airspeed);
 
+    /// Command vehicle to set its relative altitude to the current height above
+    /// ground level (AGL), based on recent measurements from an onboard
+    /// downward-facing rangefinder.
+    ///     @param measurementSpan Distance measurement span
+    ///     @param measurementType Distance measurement type
+    ///         (0=m, 1=s, 2=samples)
+    ///     @param maxSensorDeviationDeg Maximum acceptable angle of the
+    ///         distance sensor from vertical, in degrees
+    ///     @param maxMeanAbsDeviationCm Maximum acceptable mean absolute
+    ///         deviation (MAD) of the sensor readings over the measurement
+    ///         span, in centimeters
+    Q_INVOKABLE void guidedModeSetRelativeAltitudeFromDistanceSensor(
+        double measurementSpan = 25, int measurementType = 0,
+        double maxSensorDeviationDeg = 6, double maxMeanAbsDeviationCm = 25);
+
     /// Command vehicle to orbit given center point
     ///     @param centerCoord Orbit around this point
     ///     @param radius Distance from vehicle to centerCoord

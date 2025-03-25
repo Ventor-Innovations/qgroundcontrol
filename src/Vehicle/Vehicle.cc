@@ -2186,6 +2186,21 @@ Vehicle::guidedModeChangeEquivalentAirspeedMetersSecond(double airspeed)
     _firmwarePlugin->guidedModeChangeEquivalentAirspeedMetersSecond(this, airspeed);
 }
 
+void Vehicle::guidedModeSetRelativeAltitudeFromDistanceSensor(
+    double measurementSpan,
+    int measurementType,
+    double maxSensorDeviationDeg,
+    double maxMeanAbsDeviationCm)
+{
+    if (!guidedModeSupported()) {
+        qgcApp()->showAppMessage(guided_mode_not_supported_by_vehicle);
+        return;
+    }
+    _firmwarePlugin->guidedModeSetRelativeAltitudeFromDistanceSensor(
+        this, measurementSpan, measurementType, maxSensorDeviationDeg,
+        maxMeanAbsDeviationCm);
+}
+
 void Vehicle::guidedModeOrbit(const QGeoCoordinate& centerCoord, double radius, double amslAltitude)
 {
     if (!orbitModeSupported()) {

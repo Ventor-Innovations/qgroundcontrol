@@ -69,9 +69,11 @@ private:
     const Fact*     _finalApproachSpeed     (void) const final { return &_finalApproachSpeedFact; }
     const Fact*     _loiterRadius           (void) const final { return &_loiterRadiusFact; }
     const Fact*     _loiterClockwise        (void) const final { return &_loiterClockwiseFact; }
+    const Fact*     _landingAreaLength      (void) const final { return &_landingAreaLengthFact; }
     const Fact*     _landingAltitude        (void) const final { return &_landingAltitudeFact; }
     const Fact*     _landingDistance        (void) const final { return &_landingDistanceFact; }
     const Fact*     _landingHeading         (void) const final { return &_landingHeadingFact; }
+    const Fact*     _surveyLandingHeight    (void) const final { return &_surveyLandingHeightFact; }
     const Fact*     _useLoiterToAlt         (void) const final { return &_useLoiterToAltFact; }
     const Fact*     _stopTakingPhotos       (void) const final { return &_stopTakingPhotosFact; }
     const Fact*     _stopTakingVideo        (void) const final { return &_stopTakingVideoFact; }
@@ -86,9 +88,11 @@ private:
     Fact            _finalApproachSpeedFact;
     Fact            _loiterRadiusFact;
     Fact            _loiterClockwiseFact;
+    Fact            _landingAreaLengthFact;
     Fact            _landingHeadingFact;
     Fact            _landingAltitudeFact;
     Fact            _glideSlopeFact;
+    Fact            _surveyLandingHeightFact;
     Fact            _useLoiterToAltFact;
     Fact            _stopTakingPhotosFact;
     Fact            _stopTakingVideoFact;

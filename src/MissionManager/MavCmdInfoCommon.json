@@ -1132,6 +1132,40 @@
                 "min":              0
             }
         },
+        {
+            "id":           225,
+            "rawName":      "MAV_CMD_DO_SET_REL_ALT_FROM_DIST_SENSOR",
+            "friendlyName": "Set relative altitude to current HAGL",
+            "description":  "Set the relative altitude of the vehicle to the current height above ground level (AGL), based on recent measurements from an onboard downward-facing rangefinder.",
+            "category":     "Flight control",
+            "param1": {
+                "label":            "Measurement span",
+                "default":          10,
+                "decimalPlaces":    1
+            },
+            "param2": {
+                "label":            "Measurement type",
+                "enumStrings":      "Travel distance (m),Timespan (s),Samples",
+                "enumValues":       "0,1,2",
+                "default":          0
+            },
+            "param3": {
+                "label":            "Max deviation",
+                "units":            "deg",
+                "default":          12,
+                "decimalPlaces":    1,
+                "min":              -1,
+                "max":              45
+            },
+            "param4": {
+                "label":            "Max. MAD",
+                "units":            "cm",
+                "default":          25,
+                "decimalPlaces":    0,
+                "min":              -1,
+                "max":              200
+            }
+        },
         { "id": 241, "rawName": "MAV_CMD_PREFLIGHT_CALIBRATION", "friendlyName": "Calibration" },
         { "id": 242, "rawName": "MAV_CMD_PREFLIGHT_SET_SENSOR_OFFSETS", "friendlyName": "Set sensor offsets" },
         { "id": 243, "rawName": "MAV_CMD_PREFLIGHT_UAVCAN", "friendlyName": "UAVCAN configure" },

@@ -34,10 +34,12 @@ public:
     Q_PROPERTY(Fact*            useDoChangeSpeed        READ    useDoChangeSpeed                                                CONSTANT)
     Q_PROPERTY(Fact*            finalApproachSpeed      READ    finalApproachSpeed                                              CONSTANT)
     Q_PROPERTY(Fact*            loiterRadius            READ    loiterRadius                                                    CONSTANT)
+    Q_PROPERTY(Fact*            landingAreaLength       READ    landingAreaLength                                               NOTIFY landingAreaLengthChanged)
     Q_PROPERTY(Fact*            landingAltitude         READ    landingAltitude                                                 CONSTANT)
     Q_PROPERTY(Fact*            landingHeading          READ    landingHeading                                                  CONSTANT)
     Q_PROPERTY(Fact*            landingDistance         READ    landingDistance                                                 CONSTANT)
     Q_PROPERTY(Fact*            loiterClockwise         READ    loiterClockwise                                                 CONSTANT)
+    Q_PROPERTY(Fact*            surveyLandingHeight     READ    surveyLandingHeight                                             CONSTANT)
     Q_PROPERTY(Fact*            useLoiterToAlt          READ    useLoiterToAlt                                                  CONSTANT)
     Q_PROPERTY(Fact*            stopTakingPhotos        READ    stopTakingPhotos                                                CONSTANT)
     Q_PROPERTY(Fact*            stopTakingVideo         READ    stopTakingVideo                                                 CONSTANT)
@@ -54,9 +56,11 @@ public:
     const Fact* finalApproachSpeed      (void) const { return _finalApproachSpeed(); }
     const Fact* loiterRadius            (void) const { return _loiterRadius(); }
     const Fact* loiterClockwise         (void) const { return _loiterClockwise(); }
+    const Fact* landingAreaLength       (void) const { return _landingAreaLength(); }
     const Fact* landingAltitude         (void) const { return _landingAltitude(); }
     const Fact* landingDistance         (void) const { return _landingDistance(); }
     const Fact* landingHeading          (void) const { return _landingHeading(); }
+    const Fact* surveyLandingHeight     (void) const { return _surveyLandingHeight(); }
     const Fact* useLoiterToAlt          (void) const { return _useLoiterToAlt(); }
     const Fact* stopTakingPhotos        (void) const { return _stopTakingPhotos(); }
     const Fact* stopTakingVideo         (void) const { return _stopTakingVideo(); }
@@ -66,9 +70,11 @@ public:
     Fact* finalApproachSpeed    (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_finalApproachSpeed()); };
     Fact* loiterRadius          (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_loiterRadius()); };
     Fact* loiterClockwise       (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_loiterClockwise()); };
+    Fact* landingAreaLength     (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_landingAreaLength()); };
     Fact* landingAltitude       (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_landingAltitude()); };
     Fact* landingDistance       (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_landingDistance()); };
     Fact* landingHeading        (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_landingHeading()); };
+    Fact* surveyLandingHeight   (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_surveyLandingHeight()); };
     Fact* useLoiterToAlt        (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_useLoiterToAlt()); };
     Fact* stopTakingPhotos      (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_stopTakingPhotos()); };
     Fact* stopTakingVideo       (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_stopTakingVideo()); };
@@ -124,7 +130,9 @@ public:
     static constexpr const char* finalApproachSpeedName             = "FinalApproachSpeed";
     static constexpr const char* loiterRadiusName                   = "LoiterRadius";
     static constexpr const char* loiterClockwiseName                = "LoiterClockwise";
+    static constexpr const char* landingAreaLengthName              = "LandingAreaLength";
     static constexpr const char* landingAltitudeName                = "LandingAltitude";
+    static constexpr const char* surveyLandingHeightName            = "SurveyLandingHeight";
     static constexpr const char* useLoiterToAltName                 = "UseLoiterToAlt";
     static constexpr const char* stopTakingPhotosName               = "StopTakingPhotos";
     static constexpr const char* stopTakingVideoName                = "StopTakingVideo";
@@ -132,6 +140,7 @@ public:
 signals:
     void finalApproachCoordinateChanged (QGeoCoordinate coordinate);
     void slopeStartCoordinateChanged    (QGeoCoordinate coordinate);
+    void landingAreaLengthChanged       (void);
     void landingCoordinateChanged       (QGeoCoordinate coordinate);
     void landingCoordSetChanged         (bool landingCoordSet);
     void altitudesAreRelativeChanged    (bool altitudesAreRelative);
@@ -150,9 +159,11 @@ protected:
     virtual const Fact*     _finalApproachSpeed     (void) const = 0;
     virtual const Fact*     _loiterRadius           (void) const = 0;
     virtual const Fact*     _loiterClockwise        (void) const = 0;
+    virtual const Fact*     _landingAreaLength      (void) const = 0;
     virtual const Fact*     _landingAltitude        (void) const = 0;
     virtual const Fact*     _landingDistance        (void) const = 0;
     virtual const Fact*     _landingHeading         (void) const = 0;
+    virtual const Fact*     _surveyLandingHeight    (void) const = 0;
     virtual const Fact*     _useLoiterToAlt         (void) const = 0;
     virtual const Fact*     _stopTakingPhotos       (void) const = 0;
     virtual const Fact*     _stopTakingVideo        (void) const = 0;
@@ -196,8 +207,10 @@ protected:
     static constexpr const char* _jsonFinalApproachSpeedKey         = "finalApproachSpeed";
     static constexpr const char* _jsonLoiterRadiusKey               = "loiterRadius";
     static constexpr const char* _jsonLoiterClockwiseKey            = "loiterClockwise";
+    static constexpr const char* _jsonLandingAreaLengthKey          = "landingAreaLength";
     static constexpr const char* _jsonLandingCoordinateKey          = "landCoordinate";
     static constexpr const char* _jsonAltitudesAreRelativeKey       = "altitudesAreRelative";
+    static constexpr const char* _jsonSurveyLandingHeightKey        = "SurveyLandingHeight";
     static constexpr const char* _jsonUseLoiterToAltKey             = "useLoiterToAlt";
     static constexpr const char* _jsonStopTakingPhotosKey           = "stopTakingPhotos";
     static constexpr const char* _jsonStopTakingVideoKey            = "stopVideoPhotos";
