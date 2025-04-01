@@ -39,6 +39,7 @@ SettingsPage {
     property Fact   _viewer3DOsmFilePath:               _viewer3DSettings.osmFilePath
     property Fact   _viewer3DBuildingLevelHeight:       _viewer3DSettings.buildingLevelHeight
     property Fact   _viewer3DAltitudeBias:              _viewer3DSettings.altitudeBias
+    property Fact   _enableAutomaticConfirmPopups:      _flyViewSettings.enableAutomaticMissionConfirmPopups
 
     QGCFileDialogController { id: fileController }
 
@@ -108,6 +109,14 @@ SettingsPage {
             fact:               _updateHomePosition
             visible:            _updateHomePosition.visible
             property Fact _updateHomePosition: _flyViewSettings.updateHomePosition
+        }
+
+        FactCheckBoxSlider {
+            Layout.fillWidth:   true
+            text:               qsTr("Enable Automatic Mission Start/Resume Confirmation Popups")
+            fact:               _enableAutomaticMissionConfirmPopups
+            visible:            _enableAutomaticMissionConfirmPopups.visible
+            property Fact _enableAutomaticMissionConfirmPopups: _flyViewSettings.enableAutomaticMissionConfirmPopups
         }
     }
 

@@ -288,7 +288,8 @@ Item {
             console.log("showStartMission", showStartMission)
         }
         _outputState()
-        if (showStartMission) {
+        if (showStartMission &&
+            QGroundControl.settingsManager.flyViewSettings.enableAutomaticConfirmPopups) {
             confirmAction(actionStartMission)
         }
     }
@@ -297,7 +298,8 @@ Item {
             console.log("showContinueMission", showContinueMission)
         }
         _outputState()
-        if (showContinueMission) {
+        if (showContinueMission &&
+            QGroundControl.settingsManager.flyViewSettings.enableAutomaticConfirmPopups) {
             confirmAction(actionContinueMission)
         }
     }

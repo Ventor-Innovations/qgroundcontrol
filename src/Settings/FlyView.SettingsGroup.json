@@ -74,6 +74,12 @@
     "enumStrings":  "Integrated Compass/Attitude,Horizontal Compass/Attitude,Large Vertical",
     "enumValues":   "qrc:/qml/IntegratedCompassAttitude.qml,qrc:/qml/HorizontalCompassAttitude.qml,qrc:/qml/VerticalCompassAttitude.qml",
     "default":      "qrc:/qml/IntegratedCompassAttitude.qml"
+},
+{
+    "name":         "enableAutomaticMissionConfirmPopups",
+    "shortDesc":    "Enable automatic mission start/resume confirmation popups",
+    "type":         "bool",
+    "default":      true
 }
 ]
 }
