@@ -184,6 +184,7 @@ void MissionSettingsItem::_setCoordinateWorker(const QGeoCoordinate& coordinate)
 {
     if (_plannedHomePositionCoordinate != coordinate) {
         _plannedHomePositionCoordinate = coordinate;
+        emit entryCoordinateChanged(coordinate);
         emit coordinateChanged(coordinate);
         emit exitCoordinateChanged(coordinate);
         if (_plannedHomePositionFromVehicle) {
@@ -260,6 +261,7 @@ void MissionSettingsItem::_updateAltitudeInCoordinate(QVariant value)
     if (!QGC::fuzzyCompare(_plannedHomePositionCoordinate.altitude(), newAltitude)) {
         qCDebug(MissionSettingsItemLog) << "MissionSettingsItem::_updateAltitudeInCoordinate" << newAltitude;
         _plannedHomePositionCoordinate.setAltitude(newAltitude);
+        emit entryCoordinateChanged(_plannedHomePositionCoordinate);
         emit coordinateChanged(_plannedHomePositionCoordinate);
         emit exitCoordinateChanged(_plannedHomePositionCoordinate);
     }

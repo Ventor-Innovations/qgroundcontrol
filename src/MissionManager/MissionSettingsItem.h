@@ -75,6 +75,7 @@ public:
     QString         commandDescription          (void) const final { return tr("Initial Mission Settings"); }
     QString         commandName                 (void) const final { return tr("Initial Mission Settings"); }
     QString         abbreviation                (void) const final;
+    QGeoCoordinate  entryCoordinate             (void) const final { return coordinate(); }
     QGeoCoordinate  coordinate                  (void) const final { return _plannedHomePositionCoordinate; } // Includes altitude
     QGeoCoordinate  exitCoordinate              (void) const final { return _plannedHomePositionCoordinate; }
     int             sequenceNumber              (void) const final { return _sequenceNumber; }
@@ -86,6 +87,7 @@ public:
     double          additionalTimeDelay         (void) const final { return 0; }
     bool            exitCoordinateSameAsEntry   (void) const final { return true; }
     void            setDirty                    (bool dirty) final;
+    void            setEntryCoordinate          (const QGeoCoordinate& coordinate) final { setCoordinate(coordinate); }
     void            setCoordinate               (const QGeoCoordinate& coordinate) final;   // Should only be called if the end user is moving
     void            setSequenceNumber           (int sequenceNumber) final;
     void            save                        (QJsonArray&  missionItems) final;

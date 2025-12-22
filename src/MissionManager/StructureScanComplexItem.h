@@ -79,6 +79,7 @@ public:
     QString             commandDescription          (void) const final { return tr("Structure Scan"); }
     QString             commandName                 (void) const final { return tr("Structure Scan"); }
     QString             abbreviation                (void) const final { return "S"; }
+    QGeoCoordinate      entryCoordinate             (void) const final { return coordinate(); }
     QGeoCoordinate      coordinate                  (void) const final;
     QGeoCoordinate      exitCoordinate              (void) const final { return coordinate(); }
     int                 sequenceNumber              (void) const final { return _sequenceNumber; }
@@ -92,6 +93,7 @@ public:
     ReadyForSaveState   readyForSaveState           (void) const final;
     bool                exitCoordinateSameAsEntry   (void) const final { return true; }
     void                setDirty                    (bool dirty) final;
+    void                setEntryCoordinate          (const QGeoCoordinate& coordinate) final { Q_UNUSED(coordinate); }
     void                setCoordinate               (const QGeoCoordinate& coordinate) final { Q_UNUSED(coordinate); }
     void                setSequenceNumber           (int sequenceNumber) final;
     void                save                        (QJsonArray&  missionItems) final;

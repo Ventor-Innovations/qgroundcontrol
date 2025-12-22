@@ -278,6 +278,7 @@ void StructureScanComplexItem::_flightPathChanged(void)
                          QGeoCoordinate(north - 90.0, west - 180.0, bottom),
                          QGeoCoordinate(south - 90.0, east - 180.0, top)));
 
+    emit entryCoordinateChanged(coordinate());
     emit coordinateChanged(coordinate());
     emit exitCoordinateChanged(exitCoordinate());
     emit greatestDistanceToChanged();
@@ -499,6 +500,7 @@ QGeoCoordinate StructureScanComplexItem::coordinate(void) const
 
 void StructureScanComplexItem::_updateCoordinateAltitudes(void)
 {
+    emit entryCoordinateChanged(coordinate());
     emit coordinateChanged(coordinate());
     emit exitCoordinateChanged(exitCoordinate());
 }
@@ -509,6 +511,7 @@ void StructureScanComplexItem::rotateEntryPoint(void)
     if (_entryVertex >= _flightPolygon.count()) {
         _entryVertex = 0;
     }
+    emit entryCoordinateChanged(coordinate());
     emit coordinateChanged(coordinate());
     emit exitCoordinateChanged(exitCoordinate());
 }
@@ -529,6 +532,7 @@ void StructureScanComplexItem::_rebuildFlightPolygon(void)
         _entryVertex = savedEntryVertex;
     }
 
+    emit entryCoordinateChanged(coordinate());
     emit coordinateChanged(coordinate());
     emit exitCoordinateChanged(exitCoordinate());
 }

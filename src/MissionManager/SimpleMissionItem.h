@@ -114,6 +114,7 @@ public:
     QString         commandDescription          (void) const final;
     QString         commandName                 (void) const final;
     QString         abbreviation                (void) const final;
+    QGeoCoordinate  entryCoordinate             (void) const final { return coordinate(); }
     QGeoCoordinate  coordinate                  (void) const final;
     QGeoCoordinate  exitCoordinate              (void) const final { return coordinate(); }
     double          amslEntryAlt                (void) const final;
@@ -132,6 +133,7 @@ public:
     bool            exitCoordinateSameAsEntry   (void) const final { return true; }
 
     void setDirty           (bool dirty) final;
+    void setEntryCoordinate (const QGeoCoordinate& coordinate) final { setCoordinate(coordinate); }
     void setCoordinate      (const QGeoCoordinate& coordinate) override;
     void setSequenceNumber  (int sequenceNumber) final;
     int  lastSequenceNumber (void) const final;

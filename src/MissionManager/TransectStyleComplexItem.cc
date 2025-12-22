@@ -358,6 +358,7 @@ void TransectStyleComplexItem::_setIfDirty(bool dirty)
 
 void TransectStyleComplexItem::_updateCoordinateAltitudes(void)
 {
+    emit entryCoordinateChanged(coordinate());
     emit coordinateChanged(coordinate());
     emit exitCoordinateChanged(exitCoordinate());
 }
@@ -445,6 +446,7 @@ void TransectStyleComplexItem::_rebuildTransects(void)
 
     _coordinate = _visualTransectPoints.count() ? _visualTransectPoints.first().value<QGeoCoordinate>() : QGeoCoordinate();
     _exitCoordinate = _visualTransectPoints.count() ? _visualTransectPoints.last().value<QGeoCoordinate>() : QGeoCoordinate();
+    emit entryCoordinateChanged(_coordinate);
     emit coordinateChanged(_coordinate);
     emit exitCoordinateChanged(_exitCoordinate);
 

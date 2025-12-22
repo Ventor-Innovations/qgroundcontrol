@@ -118,10 +118,12 @@ void LandingComplexItem::setLandingCoordinate(const QGeoCoordinate& coordinate)
     if (coordinate != _landingCoordinate) {
         _landingCoordinate = coordinate;
         if (_landingCoordSet) {
+            emit coordinateChanged(coordinate);
             emit exitCoordinateChanged(coordinate);
             emit landingCoordinateChanged(coordinate);
         } else {
             _ignoreRecalcSignals = true;
+            emit coordinateChanged(coordinate);
             emit exitCoordinateChanged(coordinate);
             emit landingCoordinateChanged(coordinate);
             _ignoreRecalcSignals = false;
@@ -136,7 +138,7 @@ void LandingComplexItem::setFinalApproachCoordinate(const QGeoCoordinate& coordi
 {
     if (coordinate != _finalApproachCoordinate) {
         _finalApproachCoordinate = coordinate;
-        emit coordinateChanged(coordinate);
+        emit entryCoordinateChanged(coordinate);
         emit finalApproachCoordinateChanged(coordinate);
     }
 }
@@ -185,7 +187,7 @@ void LandingComplexItem::_recalcFromHeadingAndDistanceChange(void)
         _ignoreRecalcSignals = true;
         emit slopeStartCoordinateChanged(_slopeStartCoordinate);
         emit finalApproachCoordinateChanged(_finalApproachCoordinate);
-        emit coordinateChanged(_finalApproachCoordinate);
+        emit entryCoordinateChanged(_finalApproachCoordinate);
         _calcGlideSlope();
         _ignoreRecalcSignals = false;
     }
@@ -228,7 +230,7 @@ void LandingComplexItem::_recalcFromRadiusChange(void)
 
             _ignoreRecalcSignals = true;
             emit finalApproachCoordinateChanged(_finalApproachCoordinate);
-            emit coordinateChanged(_finalApproachCoordinate);
+            emit entryCoordinateChanged(_finalApproachCoordinate);
             _ignoreRecalcSignals = false;
         }
     }
@@ -261,7 +263,7 @@ void LandingComplexItem::_recalcFromApproachModeChange(void)
 
         _ignoreRecalcSignals = true;
         emit finalApproachCoordinateChanged(_finalApproachCoordinate);
-        emit coordinateChanged(_finalApproachCoordinate);
+        emit entryCoordinateChanged(_finalApproachCoordinate);
         _calcGlideSlope();
         _ignoreRecalcSignals = false;
     }
@@ -685,7 +687,7 @@ void LandingComplexItem::_updateFinalApproachCoodinateAltitudeFromFact(void)
 {
     _finalApproachCoordinate.setAltitude(finalApproachAltitude()->rawValue().toDouble());
     emit finalApproachCoordinateChanged(_finalApproachCoordinate);
-    emit coordinateChanged(_finalApproachCoordinate);
+    emit entryCoordinateChanged(_finalApproachCoordinate);
 }
 
 void LandingComplexItem::_updateLandingCoodinateAltitudeFromFact(void)
@@ -831,6 +833,7 @@ bool LandingComplexItem::_load(const QJsonObject& complexObject, int sequenceNum
     _ignoreRecalcSignals    = false;
 
     _recalcFromCoordinateChange();
+    emit entryCoordinateChanged(entryCoordinate());
     emit coordinateChanged(this->coordinate());    // This will kick off terrain query
 
     return true;

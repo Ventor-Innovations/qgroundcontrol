@@ -98,7 +98,8 @@ public:
     QString             commandDescription          (void) const final { return "Landing Pattern"; }
     QString             commandName                 (void) const final { return "Landing Pattern"; }
     QString             abbreviation                (void) const final { return "L"; }
-    QGeoCoordinate      coordinate                  (void) const final { return _finalApproachCoordinate; }
+    QGeoCoordinate      entryCoordinate             (void) const final { return _finalApproachCoordinate; }
+    QGeoCoordinate      coordinate                  (void) const final { return _landingCoordinate; }
     QGeoCoordinate      exitCoordinate              (void) const final { return _landingCoordinate; }
     int                 sequenceNumber              (void) const final { return _sequenceNumber; }
     double              specifiedFlightSpeed        (void) final { return std::numeric_limits<double>::quiet_NaN(); }
@@ -110,6 +111,7 @@ public:
     ReadyForSaveState   readyForSaveState           (void) const final;
     bool                exitCoordinateSameAsEntry   (void) const final { return false; }
     void                setDirty                    (bool dirty) final;
+    void                setEntryCoordinate          (const QGeoCoordinate& coordinate) final { setFinalApproachCoordinate(coordinate); }
     void                setCoordinate               (const QGeoCoordinate& coordinate) final;
     void                setSequenceNumber           (int sequenceNumber) final;
     double              amslEntryAlt                (void) const final;

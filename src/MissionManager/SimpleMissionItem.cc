@@ -108,6 +108,7 @@ SimpleMissionItem::SimpleMissionItem(PlanMasterController* masterController, boo
     }
 
     // Signal coordinate changed to kick off terrain query
+    emit entryCoordinateChanged(coordinate());
     emit coordinateChanged(coordinate());
 
     setDirty(false);
@@ -155,7 +156,7 @@ void SimpleMissionItem::_connectSignals(void)
     connect(&_missionItem._param3Fact,          &Fact::valueChanged,                        this, &SimpleMissionItem::_possibleRadiusChanged);
 
     // Exit coordinate is the same as entrance coordinate
-    connect(this,                               &SimpleMissionItem::coordinateChanged,      this, &SimpleMissionItem::exitCoordinateChanged);
+    connect(this,                               &SimpleMissionItem::entryCoordinateChanged, this, &SimpleMissionItem::exitCoordinateChanged);
 
     // The following changes may also change friendlyEditAllowed
     connect(&_missionItem._autoContinueFact,    &Fact::valueChanged,                        this, &SimpleMissionItem::_sendFriendlyEditAllowedChanged);
@@ -701,6 +702,7 @@ void SimpleMissionItem::_setDirty(void)
 
 void SimpleMissionItem::_sendCoordinateChanged(void)
 {
+    emit entryCoordinateChanged(coordinate());
     emit coordinateChanged(coordinate());
 }
 

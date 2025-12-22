@@ -123,7 +123,7 @@ Item {
             anchorPoint.x:  sourceItem.anchorPointX
             anchorPoint.y:  sourceItem.anchorPointY
             z:              QGroundControl.zOrderMapItems
-            coordinate:     _missionItem.coordinate
+            coordinate:     _missionItem.entryCoordinate
             visible:        _missionItem.exitCoordinate.isValid
             opacity:        _root.opacity
 

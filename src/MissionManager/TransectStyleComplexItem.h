@@ -90,6 +90,7 @@ public:
     bool                isSimpleItem                (void) const final { return false; }
     bool                isStandaloneCoordinate      (void) const final { return false; }
     bool                specifiesAltitudeOnly       (void) const final { return false; }
+    QGeoCoordinate      entryCoordinate             (void) const final { return _coordinate; }
     QGeoCoordinate      coordinate                  (void) const final { return _coordinate; }
     QGeoCoordinate      exitCoordinate              (void) const final { return _exitCoordinate; }
     int                 sequenceNumber              (void) const final { return _sequenceNumber; }
@@ -103,6 +104,7 @@ public:
     QString             abbreviation                (void) const override { return tr("T"); }
     bool                exitCoordinateSameAsEntry   (void) const final { return false; }
     void                setDirty                    (bool dirty) final;
+    void                setEntryCoordinate          (const QGeoCoordinate& coordinate) final { Q_UNUSED(coordinate); }
     void                setCoordinate               (const QGeoCoordinate& coordinate) final { Q_UNUSED(coordinate); }
     void                setSequenceNumber           (int sequenceNumber) final;
     double              amslEntryAlt                (void) const final;
